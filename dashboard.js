@@ -29,7 +29,7 @@ onAuthStateChanged(auth, (user) => {
         authLink.href = 'dashboard.html';
     } else {
         authText.textContent = 'Login';
-        authLink.href = login.html;
+        authLink.href = 'login.html';
     }
 });
 
@@ -91,10 +91,10 @@ form.addEventListener('submit', function (e) {
     const fullMessage = `
 📩 New Inquiry from USTAAD JEE Website
 
-👤 Name: ${ name}
-📧 Email: ${ email}
-📞 Phone: ${ phoneNumber}
-💬 Message: ${ message}
+👤 Name: ${name}
+📧 Email: ${email}
+📞 Phone: ${phoneNumber}
+💬 Message: ${message}
     `.trim();
 
     const encodedMessage = encodeURIComponent(fullMessage);
@@ -123,36 +123,119 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Entrance Animations
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    // Register ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
 
-    tl.fromTo('#heroBadge, #freeBadge',
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.5, stagger: 0.15 }
-    )
-        .fromTo('#heroTitle',
-            { opacity: 0, y: 30 },
-            { opacity: 1, y: 0, duration: 0.8 },
-            '-=0.2'
-        )
-        .fromTo('#heroDesc',
-            { opacity: 0, y: 20 },
-            { opacity: 1, y: 0, duration: 0.6 },
-            '-=0.3'
-        )
-        .fromTo('#heroButtons',
-            { opacity: 0, y: 20 },
-            { opacity: 1, y: 0, duration: 0.6 },
-            '-=0.2'
-        )
-        .fromTo('#heroImage',
-            { opacity: 0, x: 50, scale: 0.9 },
-            { opacity: 1, x: 0, scale: 1, duration: 1 },
-            '-=0.6'
+    // ==========================================
+    // 🔥 ZABARDAST ANIMATIONS
+    // ==========================================
+
+    // --- HERO SECTION: 3D PARALLAX ON IMAGE ---
+    const heroImage = document.querySelector('.hero-image img');
+    if (heroImage) {
+        gsap.to(heroImage, {
+            y: 20,
+            rotation: 2,
+            scale: 1.02,
+            duration: 1.5,
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 1.5
+            }
+        });
+    }
+
+    // --- FLOATING BADGE: EXTRA GLOW PULSE ---
+    const floatBadge = document.querySelector('.admissions-float-badge');
+    if (floatBadge) {
+        gsap.to(floatBadge, {
+            boxShadow: '0 0 80px rgba(46, 204, 113, 0.6), 0 0 160px rgba(46, 204, 113, 0.3)',
+            duration: 1.5,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut'
+        });
+    }
+
+    // --- HERO BADGES: STAGGER ENTRANCE ---
+    const heroBadges = document.querySelectorAll('.hero-badge, .admissions-float-badge');
+    gsap.fromTo(heroBadges,
+        { opacity: 0, y: -30, scale: 0.8 },
+        {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: 'back.out(1.7)'
+        }
+    );
+
+    // --- HERO TITLE: SPLIT TEXT EFFECT ---
+    const heroTitle = document.querySelector('#heroTitle');
+    if (heroTitle) {
+        gsap.fromTo(heroTitle,
+            { opacity: 0, y: 50, rotationX: -20 },
+            {
+                opacity: 1,
+                y: 0,
+                rotationX: 0,
+                duration: 1.2,
+                ease: 'power3.out'
+            }
         );
+    }
 
-    // Scroll Animations
-    // Stats
+    // --- HERO BUTTONS: POP IN ---
+    const heroButtons = document.querySelectorAll('.hero-buttons a');
+    gsap.fromTo(heroButtons,
+        { opacity: 0, scale: 0.7, rotation: -5 },
+        {
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            duration: 0.6,
+            stagger: 0.15,
+            ease: 'back.out(2)'
+        }
+    );
+
+    // ==========================================
+    // 🎯 STATS: COUNTER ANIMATION
+    // ==========================================
+    const statNumbers = document.querySelectorAll('.stat-item h3');
+    statNumbers.forEach((stat) => {
+        const text = stat.textContent;
+        const num = parseFloat(text.replace(/[^0-9.]/g, ''));
+        const suffix = text.replace(/[0-9.]/g, '');
+
+        if (!isNaN(num)) {
+            gsap.fromTo(stat,
+                { innerText: 0 },
+                {
+                    innerText: num,
+                    duration: 2.5,
+                    ease: 'power2.out',
+                    scrollTrigger: {
+                        trigger: stat,
+                        start: 'top 90%',
+                        toggleActions: 'play none none none'
+                    },
+                    onUpdate: function () {
+                        if (Number.isInteger(num)) {
+                            stat.innerText = Math.round(this.targets()[0].innerText) + suffix;
+                        } else {
+                            stat.innerText = parseFloat(this.targets()[0].innerText).toFixed(1) + suffix;
+                        }
+                    }
+                }
+            );
+        }
+    });
+
+    // --- STATS CARDS: FADE UP ---
     const statItems = document.querySelectorAll('.stat-item');
     gsap.fromTo(statItems,
         { opacity: 0, y: 40, scale: 0.9 },
@@ -170,157 +253,354 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     );
 
-    // Goal
-    gsap.fromTo('#goalHeading',
-        { opacity: 0, y: 30 },
-        {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            scrollTrigger: {
-                trigger: '#goal',
-                start: 'top 85%',
-                toggleActions: 'play none none none'
-            }
-        }
-    );
+    // ==========================================
+    // 🎯 GOAL SECTION: 3D TILT CARDS
+    // ==========================================
     const goalCards = document.querySelectorAll('.goal-card');
-    gsap.fromTo(goalCards,
-        { opacity: 0, y: 40, scale: 0.92 },
-        {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.6,
-            stagger: 0.15,
-            scrollTrigger: {
-                trigger: '#goalGrid',
-                start: 'top 80%',
-                toggleActions: 'play none none none'
+    goalCards.forEach((card, index) => {
+        gsap.fromTo(card,
+            { opacity: 0, y: 50, rotationY: 20 },
+            {
+                opacity: 1,
+                y: 0,
+                rotationY: 0,
+                duration: 0.8,
+                delay: index * 0.15,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                }
             }
-        }
-    );
+        );
 
-    // Campus
-    gsap.fromTo('#campusImage',
-        { opacity: 0, x: -50, scale: 0.9 },
-        {
-            opacity: 1,
-            x: 0,
-            scale: 1,
-            duration: 0.8,
-            scrollTrigger: {
-                trigger: '#campus',
-                start: 'top 80%',
-                toggleActions: 'play none none none'
-            }
-        }
-    );
-    gsap.fromTo('.campus-content',
-        { opacity: 0, x: 50 },
-        {
-            opacity: 1,
-            x: 0,
-            duration: 0.8,
-            scrollTrigger: {
-                trigger: '#campus',
-                start: 'top 80%',
-                toggleActions: 'play none none none'
-            }
-        }
-    );
+        // HOVER 3D TILT EFFECT
+        card.addEventListener('mouseenter', () => {
+            gsap.to(card, {
+                rotationY: 5,
+                rotationX: -3,
+                scale: 1.03,
+                boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
+                duration: 0.4,
+                ease: 'power2.out'
+            });
+        });
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                rotationY: 0,
+                rotationX: 0,
+                scale: 1,
+                boxShadow: 'none',
+                duration: 0.4,
+                ease: 'power2.out'
+            });
+        });
+    });
 
-    // Courses
-    gsap.fromTo('#coursesHeading',
-        { opacity: 0, y: 30 },
-        {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            scrollTrigger: {
-                trigger: '#courses',
-                start: 'top 85%',
-                toggleActions: 'play none none none'
+    // ==========================================
+    // 🎯 CAMPUS SECTION: REVEAL FROM SIDES
+    // ==========================================
+    const campusImage = document.querySelector('.campus-image');
+    const campusContent = document.querySelector('.campus-content');
+
+    if (campusImage) {
+        gsap.fromTo(campusImage,
+            { opacity: 0, x: -80, rotation: -5 },
+            {
+                opacity: 1,
+                x: 0,
+                rotation: 0,
+                duration: 1.2,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '#campus',
+                    start: 'top 80%',
+                    toggleActions: 'play none none none'
+                }
             }
-        }
-    );
+        );
+    }
+
+    if (campusContent) {
+        gsap.fromTo(campusContent,
+            { opacity: 0, x: 80, rotation: 5 },
+            {
+                opacity: 1,
+                x: 0,
+                rotation: 0,
+                duration: 1.2,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '#campus',
+                    start: 'top 80%',
+                    toggleActions: 'play none none none'
+                }
+            }
+        );
+    }
+
+    // ==========================================
+    // 🎯 COURSES: 3D CARD REVEAL
+    // ==========================================
     const courseCards = document.querySelectorAll('.course-card');
-    gsap.fromTo(courseCards,
-        { opacity: 0, y: 40, scale: 0.92 },
-        {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.6,
-            stagger: 0.12,
-            scrollTrigger: {
-                trigger: '#coursesGrid',
-                start: 'top 80%',
-                toggleActions: 'play none none none'
+    courseCards.forEach((card, index) => {
+        gsap.fromTo(card,
+            { opacity: 0, y: 60, scale: 0.9, rotationX: 10 },
+            {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                rotationX: 0,
+                duration: 0.7,
+                delay: index * 0.1,
+                ease: 'back.out(1.5)',
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                }
             }
-        }
-    );
+        );
 
-    // Faculty
-    gsap.fromTo('#facultyHeading',
-        { opacity: 0, y: 30 },
-        {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            scrollTrigger: {
-                trigger: '#faculty',
-                start: 'top 85%',
-                toggleActions: 'play none none none'
-            }
-        }
-    );
+        // HOVER LIFT EFFECT
+        card.addEventListener('mouseenter', () => {
+            gsap.to(card, {
+                y: -8,
+                scale: 1.02,
+                boxShadow: '0 15px 40px rgba(243,156,18,0.2)',
+                duration: 0.4,
+                ease: 'power2.out'
+            });
+        });
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                y: 0,
+                scale: 1,
+                boxShadow: 'none',
+                duration: 0.4,
+                ease: 'power2.out'
+            });
+        });
+    });
+
+    // ==========================================
+    // 🎯 FACULTY: STAGGER REVEAL WITH SPIN
+    // ==========================================
     const teacherCards = document.querySelectorAll('.teacher-card');
-    gsap.fromTo(teacherCards,
-        { opacity: 0, y: 40, scale: 0.92 },
-        {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.6,
-            stagger: 0.12,
-            scrollTrigger: {
-                trigger: '#facultyGrid',
-                start: 'top 80%',
-                toggleActions: 'play none none none'
+    teacherCards.forEach((card, index) => {
+        gsap.fromTo(card,
+            { opacity: 0, y: 40, rotationY: -30, scale: 0.8 },
+            {
+                opacity: 1,
+                y: 0,
+                rotationY: 0,
+                scale: 1,
+                duration: 0.8,
+                delay: index * 0.12,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                }
             }
-        }
-    );
+        );
 
-    // Demo CTA
-    gsap.fromTo('.demo-content',
-        { opacity: 0, y: 30, scale: 0.95 },
-        {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.8,
-            scrollTrigger: {
-                trigger: '#demo',
-                start: 'top 85%',
-                toggleActions: 'play none none none'
-            }
+        // AVATAR HOVER ANIMATION
+        const avatar = card.querySelector('.avatar');
+        if (avatar) {
+            card.addEventListener('mouseenter', () => {
+                gsap.to(avatar, {
+                    scale: 1.1,
+                    borderColor: '#f39c12',
+                    boxShadow: '0 0 30px rgba(243,156,18,0.3)',
+                    duration: 0.4,
+                    ease: 'power2.out'
+                });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(avatar, {
+                    scale: 1,
+                    borderColor: 'rgba(243,156,18,0.2)',
+                    boxShadow: 'none',
+                    duration: 0.4,
+                    ease: 'power2.out'
+                });
+            });
         }
-    );
+    });
 
-    // Contact
-    gsap.fromTo('#contactInfo, #contactFormWrapper',
-        { opacity: 0, x: -40 },
-        {
-            opacity: 1,
-            x: 0,
-            duration: 0.7,
-            stagger: 0.2,
-            scrollTrigger: {
-                trigger: '#contact',
-                start: 'top 85%',
-                toggleActions: 'play none none none'
+    // ==========================================
+    // 🎯 DEMO CTA: BOUNCE IN
+    // ==========================================
+    const demoContent = document.querySelector('.demo-content');
+    if (demoContent) {
+        gsap.fromTo(demoContent,
+            { opacity: 0, y: 40, scale: 0.85 },
+            {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 1,
+                ease: 'back.out(1.7)',
+                scrollTrigger: {
+                    trigger: '#demo',
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                }
             }
+        );
+    }
+
+    // ==========================================
+    // 🎯 CONTACT: SIDE REVEAL
+    // ==========================================
+    const contactInfo = document.querySelector('#contactInfo');
+    const contactFormWrapper = document.querySelector('#contactFormWrapper');
+
+    if (contactInfo) {
+        gsap.fromTo(contactInfo,
+            { opacity: 0, x: -50 },
+            {
+                opacity: 1,
+                x: 0,
+                duration: 0.9,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '#contact',
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                }
+            }
+        );
+    }
+
+    if (contactFormWrapper) {
+        gsap.fromTo(contactFormWrapper,
+            { opacity: 0, x: 50 },
+            {
+                opacity: 1,
+                x: 0,
+                duration: 0.9,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '#contact',
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                }
+            }
+        );
+    }
+
+    // ==========================================
+    // ✨ EXTRA: CONTINUOUS FLOATING FOR SHAPES
+    // ==========================================
+    const shapes = document.querySelectorAll('.float-shape');
+    shapes.forEach((shape, i) => {
+        gsap.to(shape, {
+            y: -20 + i * 10,
+            x: 20 + i * 8,
+            rotation: 360 + i * 45,
+            duration: 15 + i * 3,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            delay: i * 0.5
+        });
+    });
+
+    // ==========================================
+    // ✨ NAV LOGO: CONTINUOUS FLOAT (Enhanced)
+    // ==========================================
+    const navLogo = document.querySelector('.nav-logo img');
+    if (navLogo) {
+        gsap.to(navLogo, {
+            y: -6,
+            duration: 2.5,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut'
+        });
+    }
+
+    // ==========================================
+    // 🔥🔥🔥 NEW: 3 CONTINUOUS MOTION ANIMATIONS
+    // ==========================================
+
+    // --- 1. STATS NUMBERS: Continuous Pulse / Breathe Effect ---
+    const statNumbersForPulse = document.querySelectorAll('.stat-item h3');
+    statNumbersForPulse.forEach((stat, index) => {
+        gsap.to(stat, {
+            scale: 1.08,
+            duration: 1.5 + index * 0.2,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            delay: index * 0.3
+        });
+    });
+
+    // --- 2. COURSE CARDS: Continuous Gentle Floating (Up/Down) ---
+    const courseCardsForFloat = document.querySelectorAll('.course-card');
+    courseCardsForFloat.forEach((card, index) => {
+        gsap.to(card, {
+            y: -8 + (index % 2 === 0 ? 0 : 4),
+            duration: 3 + index * 0.3,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            delay: index * 0.25
+        });
+        // Add subtle rotation for extra "zabardast" feel
+        gsap.to(card, {
+            rotation: 0.5,
+            duration: 4 + index * 0.2,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            delay: index * 0.2
+        });
+    });
+
+    // --- 3. TEACHER CARDS: Continuous Subtle Sway + Avatar Glow Pulse ---
+    const teacherCardsForSway = document.querySelectorAll('.teacher-card');
+    teacherCardsForSway.forEach((card, index) => {
+        // Subtle sway (rotation)
+        gsap.to(card, {
+            rotation: 0.8,
+            duration: 4 + index * 0.3,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            delay: index * 0.2
+        });
+        // Subtle y movement
+        gsap.to(card, {
+            y: -5 + (index % 2 === 0 ? 0 : 3),
+            duration: 3.5 + index * 0.25,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            delay: index * 0.15
+        });
+        // Avatar glow pulse (continuous)
+        const avatar = card.querySelector('.avatar');
+        if (avatar) {
+            gsap.to(avatar, {
+                boxShadow: '0 0 30px rgba(243,156,18,0.25), 0 0 60px rgba(243,156,18,0.1)',
+                duration: 2.5 + index * 0.2,
+                repeat: -1,
+                yoyo: true,
+                ease: 'sine.inOut',
+                delay: index * 0.2
+            });
         }
-    );
+    });
+
+    console.log('🚀 USTAAD JEE — Zabardast GSAP Animations Loaded!');
+    console.log('🔥 3 Extra Continuous Motion Animations Added:');
+    console.log('  1️⃣ Stats Numbers — Pulse/Breathe');
+    console.log('  2️⃣ Course Cards — Gentle Float + Rotation');
+    console.log('  3️⃣ Teacher Cards — Sway + Avatar Glow');
 });

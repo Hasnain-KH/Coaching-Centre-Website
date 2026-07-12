@@ -91,10 +91,10 @@ form.addEventListener('submit', function (e) {
     const fullMessage = `
 📩 New Inquiry from USTAAD JEE Website
 
-👤 Name: ${name}
-📧 Email: ${email}
-📞 Phone: ${phoneNumber}
-💬 Message: ${message}
+👤 Name: ${ name}
+📧 Email: ${ email}
+📞 Phone: ${ phoneNumber}
+💬 Message: ${ message}
     `.trim();
 
     const encodedMessage = encodeURIComponent(fullMessage);

@@ -30,7 +30,7 @@ body {
   color: var(--text-light);
   line-height: 1.6;
   overflow-x: hidden;
-  padding-top: 110px; /* Nav + Marquee space */
+  padding-top: 110px;
 }
 
 a {
@@ -50,7 +50,7 @@ img {
 }
 
 /* ==========================================
-   1. TOP MARQUEE - ADMISSIONS OPEN (CONTINUOUS)
+   1. TOP MARQUEE
 ========================================== */
 .marquee-container {
   position: fixed;
@@ -100,7 +100,7 @@ img {
 ========================================== */
 nav {
   position: fixed;
-  top: 43px; /* Marquee ke neeche */
+  top: 43px;
   left: 0;
   width: 100%;
   z-index: 1000;
@@ -326,7 +326,6 @@ nav .container {
   z-index: 1;
 }
 
-/* Floating Background Shapes (Continuous) */
 .floating-shapes {
   position: absolute;
   inset: 0;
@@ -399,7 +398,6 @@ nav .container {
   align-items: center;
 }
 
-/* Floating Admissions Badge (Continuous Rotation) */
 .admissions-float-badge {
   display: inline-flex;
   align-items: center;
@@ -564,7 +562,6 @@ nav .container {
 /* ==========================================
    7. CAMPUS
 ========================================== */
-
 .campus {
   padding: 80px 0;
   background: var(--primary-light);
@@ -665,17 +662,21 @@ nav .container {
 }
 
 /* ==========================================
-   9. FACULTY
+   9. FACULTY — 6 TEACHERS (3 upar, 3 neeche)
 ========================================== */
 .faculty {
   padding: 80px 0;
   background: var(--primary-light);
 }
+
 .faculty-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 25px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  max-width: 900px;
+  margin: 0 auto;
 }
+
 .teacher-card {
   background: var(--primary);
   padding: 30px 20px;
@@ -684,10 +685,12 @@ nav .container {
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: 0.3s ease;
 }
+
 .teacher-card:hover {
   transform: translateY(-5px);
   border-color: var(--secondary);
 }
+
 .teacher-card .avatar {
   width: 100px;
   height: 100px;
@@ -881,7 +884,7 @@ footer p span {
 }
 
 /* ==========================================
-   13. SECTION HEADINGS (GLOBAL)
+   13. SECTION HEADINGS
 ========================================== */
 .section-heading {
   text-align: center;
@@ -940,6 +943,7 @@ footer p span {
   }
   .faculty-grid {
     grid-template-columns: repeat(2, 1fr);
+    max-width: 600px;
   }
   .admissions-float-badge {
     font-size: 15px;
@@ -996,7 +1000,8 @@ footer p span {
     grid-template-columns: 1fr;
   }
   .faculty-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 100%;
   }
   .contact-grid {
     grid-template-columns: 1fr;
@@ -1045,5 +1050,9 @@ footer p span {
   }
   .marquee-content {
     font-size: 10px;
+  }
+  .faculty-grid {
+    grid-template-columns: 1fr;
+    max-width: 100%;
   }
 }

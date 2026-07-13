@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>USTAAD JEE · Signup / Login</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <!-- GSAP (GreenSock Animation Platform) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <!-- SweetAlert2 -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="auth.css" />
+  </head>
+  <body>
+    <!-- ==========================================
+         ANIMATED BACKGROUND - 3D Floating Shapes
+         ========================================== -->
+    <div class="bg-container">
+      <div class="bg-gradient"></div>
+      <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="shape shape-6"></div>
+        <div class="shape shape-7"></div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         MAIN AUTH WRAPPER
+         ========================================== -->
+    <div class="auth-wrapper" id="authWrapper">
+      <div class="auth-card" id="authCard">
+        <!-- ========== BRAND / LOGO ========== -->
+        <div class="brand" id="brand">
+          <div class="logo-wrapper">
+            <div class="logo-ring" id="logoRing">
+              <div class="logo-circle">
+                <img
+                  src="assets/ustaadlogo.jpeg"
+                  alt="USTAAD JEE"
+                  id="logoImage"
+                />
+              </div>
+            </div>
+            <div class="brand-badge" id="badge">
+              <i class="fas fa-certificate"></i> Trusted Since 2020
+            </div>
+          </div>
+          <h1>USTAAD <span>JEE</span></h1>
+          <p id="tagline">Excellence in Education · Secure · Modern</p>
+        </div>
+
+        <!-- ========== TOGGLE ========== -->
+        <div class="toggle-bar" id="toggleBar">
+          <button
+            id="toggleSignup"
+            class="toggle-btn active"
+            data-form="signup"
+          >
+            <i class="fas fa-user-plus"></i> Sign Up
+          </button>
+          <button id="toggleLogin" class="toggle-btn" data-form="login">
+            <i class="fas fa-sign-in-alt"></i> Log In
+          </button>
+        </div>
+
+        <!-- ========== SIGNUP FORM ========== -->
+        <form id="signupForm" class="auth-form active">
+          <div class="input-group" data-index="0">
+            <i class="fas fa-user"></i>
+            <input
+              type="text"
+              id="signupName"
+              placeholder="Full Name"
+              required
+            />
+          </div>
+          <div class="input-group" data-index="1">
+            <i class="fas fa-user-friends"></i>
+            <input
+              type="text"
+              id="signupFather"
+              placeholder="Father's Name"
+              required
+            />
+          </div>
+          <!-- <div class="input-group" data-index="3">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              id="signupPassword"
+              placeholder="Password (min 6 chars)"
+              required
+            />
+          </div> -->
+          <div id="signupError" class="form-error"></div>
+          <button type="submit" id="signupBtn">
+            <span>Create Account</span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+          <p class="form-footnote">
+            <i class="fas fa-shield-alt"></i> Your data is secure with us
+          </p>
+        </form>
+
+        <!-- ========== LOGIN FORM ========== -->
+        <form id="loginForm" class="auth-form">
+          <div class="input-group" data-index="4">
+            <i class="fas fa-envelope"></i>
+            <input
+              type="email"
+              id="loginEmail"
+              placeholder="Email Address"
+              required
+            />
+          </div>
+          <div class="input-group" data-index="5">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              id="loginPassword"
+              placeholder="Password"
+              required
+            />
+          </div>
+          <div id="loginError" class="form-error"></div>
+          <button type="submit" id="loginBtn">
+            <span>Log In</span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+          <p class="form-footnote">
+            <i class="fas fa-graduation-cap"></i> USTAAD JEE — Building Futures
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         FIREBASE SDKs
+         ========================================== -->
+    <script type="importmap">
+      {
+        "imports": {
+          "firebase/app": "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js",
+          "firebase/auth": "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js",
+          "firebase/firestore": "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js"
+        }
+      }
+    </script>
+
+    <script type="module" src="auth.js"></script>
+
+    <!-- ==========================================
+         GSAP ANIMATIONS (Heavy & Professional)
+         ========================================== -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Wait for GSAP to load
+        if (typeof gsap === "undefined") {
+          console.warn("GSAP not loaded!");
+          return;
+        }
+
+        // ==========================================
+        // 1. BACKGROUND SHAPES - 3D Floating Effect
+        // ==========================================
+        const shapes = document.querySelectorAll(".shape");
+        shapes.forEach((shape, i) => {
+          const duration = 15 + i * 3;
+          const xRange = 80 + i * 20;
+          const yRange = 60 + i * 15;
+
+          gsap.to(shape, {
+            x: xRange,
+            y: -yRange,
+            rotation: 360,
+            duration: duration,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            delay: i * 0.5,
+          });
+        });
+
+        // ==========================================
+        // 2. MAIN TIMELINE - Card Entrance
+        // ==========================================
+        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+        // Card appears with scale + fade + 3D rotation
+        tl.fromTo(
+          "#authCard",
+          { opacity: 0, y: 80, scale: 0.85, rotationX: -10 },
+          { opacity: 1, y: 0, scale: 1, rotationX: 0, duration: 1.4 },
+        );
+
+        // ==========================================
+        // 3. LOGO ANIMATION
+        // ==========================================
+        tl.fromTo(
+          ".logo-ring",
+          { opacity: 0, scale: 0.3, rotation: -360 },
+          { opacity: 1, scale: 1, rotation: 0, duration: 1.2 },
+          "-=0.8",
+        );
+
+        tl.fromTo(
+          "#logoImage",
+          { opacity: 0, scale: 0.5 },
+          { opacity: 1, scale: 1, duration: 0.8 },
+          "-=0.6",
+        );
+
+        // ==========================================
+        // 4. BRAND TEXT ANIMATION (Stagger)
+        // ==========================================
+        const brandElements = [
+          { el: ".brand h1", y: 30, dur: 0.8 },
+          { el: "#tagline", y: 20, dur: 0.6 },
+          { el: "#badge", y: 15, dur: 0.4 },
+        ];
+
+        brandElements.forEach((item, index) => {
+          tl.fromTo(
+            item.el,
+            { opacity: 0, y: item.y },
+            { opacity: 1, y: 0, duration: item.dur },
+            "-=0.3",
+          );
+        });
+
+        // ==========================================
+        // 5. TOGGLE BAR ANIMATION
+        // ==========================================
+        tl.fromTo(
+          "#toggleBar",
+          { opacity: 0, y: 25, scale: 0.95 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.7 },
+          "-=0.3",
+        );
+
+        // ==========================================
+        // 6. INPUT FIELDS - Stagger Entrance
+        // ==========================================
+        const inputs = document.querySelectorAll(".input-group");
+        tl.fromTo(
+          inputs,
+          { opacity: 0, x: -40, scale: 0.92 },
+          { opacity: 1, x: 0, scale: 1, duration: 0.6, stagger: 0.1 },
+          "-=0.4",
+        );
+
+        // ==========================================
+        // 7. SUBMIT BUTTON & FOOTNOTE
+        // ==========================================
+        tl.fromTo(
+          "#signupBtn, #loginBtn",
+          { opacity: 0, y: 25, scale: 0.9 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.6 },
+          "-=0.2",
+        );
+
+        tl.fromTo(
+          ".form-footnote",
+          { opacity: 0, y: 15 },
+          { opacity: 1, y: 0, duration: 0.5 },
+          "-=0.2",
+        );
+
+        // ==========================================
+        // 8. INFINITE PULSE EFFECT ON LOGO RING
+        // ==========================================
+        gsap.to("#logoRing", {
+          duration: 2.5,
+          boxShadow:
+            "0 0 80px rgba(243, 156, 18, 0.4), 0 0 160px rgba(243, 156, 18, 0.15)",
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        });
+
+        // ==========================================
+        // 9. BUTTON HOVER - 3D TILT EFFECT
+        // ==========================================
+        document.querySelectorAll('button[type="submit"]').forEach((btn) => {
+          // Hover scale
+          btn.addEventListener("mouseenter", () => {
+            gsap.to(btn, {
+              scale: 1.04,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          });
+          btn.addEventListener("mouseleave", () => {
+            gsap.to(btn, {
+              scale: 1,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          });
+
+          // Click pulse
+          btn.addEventListener("click", function (e) {
+            // But prevent if form is submitting
+            if (!this.closest("form").checkValidity()) return;
+
+            gsap
+              .timeline()
+              .to(this, { scale: 0.92, duration: 0.1, ease: "power2.in" })
+              .to(this, { scale: 1.04, duration: 0.15, ease: "power2.out" })
+              .to(this, { scale: 1, duration: 0.15, ease: "power2.out" });
+          });
+        });
+
+        // ==========================================
+        // 10. INPUT FOCUS - GLOW & BORDER ANIMATION
+        // ==========================================
+        document.querySelectorAll(".input-group input").forEach((input) => {
+          input.addEventListener("focus", function () {
+            const parent = this.closest(".input-group");
+            gsap.to(parent, {
+              borderColor: "#f39c12",
+              boxShadow:
+                "0 0 0 5px rgba(243, 156, 18, 0.15), 0 0 30px rgba(243, 156, 18, 0.05)",
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          });
+
+          input.addEventListener("blur", function () {
+            const parent = this.closest(".input-group");
+            gsap.to(parent, {
+              borderColor: "rgba(255,255,255,0.06)",
+              boxShadow: "none",
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          });
+        });
+
+        // ==========================================
+        // 11. TOGGLE BUTTON - BOUNCE ON CLICK
+        // ==========================================
+        document.querySelectorAll(".toggle-btn").forEach((btn) => {
+          btn.addEventListener("click", function () {
+            gsap
+              .timeline()
+              .to(this, { scale: 0.85, duration: 0.12, ease: "power2.in" })
+              .to(this, { scale: 1.1, duration: 0.2, ease: "back.out(2)" })
+              .to(this, { scale: 1, duration: 0.15, ease: "power2.out" });
+          });
+        });
+
+        // ==========================================
+        // 12. FLOATING LOGO (Subtle Float)
+        // ==========================================
+        gsap.to(".logo-wrapper", {
+          y: -8,
+          duration: 3,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        });
+
+        // ==========================================
+        // 13. CONFETTI / SPARKLE EFFECT (For show)
+        // ==========================================
+        // Create sparkle particles on card
+        function createSparkle() {
+          const sparkle = document.createElement("div");
+          sparkle.className = "sparkle";
+          sparkle.style.cssText = `
+                    position: absolute;
+                    width: 4px;
+                    height: 4px;
+                    background: #f39c12;
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 0;
+                `;
+          return sparkle;
+        }
+
+        // Add sparkles randomly
+        const card = document.querySelector(".auth-card");
+        for (let i = 0; i < 15; i++) {
+          const sparkle = createSparkle();
+          const x = Math.random() * 100;
+          const y = Math.random() * 100;
+          sparkle.style.left = x + "%";
+          sparkle.style.top = y + "%";
+          sparkle.style.opacity = 0.2 + Math.random() * 0.3;
+          sparkle.style.width = 2 + Math.random() * 4 + "px";
+          sparkle.style.height = sparkle.style.width;
+          card.appendChild(sparkle);
+
+          // Animate sparkle
+          gsap.to(sparkle, {
+            opacity: 0,
+            duration: 2 + Math.random() * 3,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            delay: Math.random() * 3,
+          });
+        }
+
+        console.log("✨ GSAP Animations Loaded Successfully!");
+        console.log("🎯 USTAAD JEE — Coaching Excellence");
+      });
+    </script>
+  </body>
+</html>

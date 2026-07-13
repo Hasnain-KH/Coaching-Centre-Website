@@ -26,12 +26,13 @@ const authText = document.getElementById('authText');
 onAuthStateChanged(auth, (user) => {
     if (user) {
         authText.textContent = 'Dashboard';
-        authLink.href = 'dashboard.html';
+        authLink.href = 'auth.html';
     } else {
         authText.textContent = 'Login';
-        authLink.href = 'login.html';
+        authLink.href = 'auth.html';
     }
 });
+
 
 // ==========================================
 // 2. HAMBURGER MENU TOGGLE

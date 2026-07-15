@@ -25,7 +25,7 @@ const authText = document.getElementById('authText');
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        authText.textContent = 'Do Login Here';
+        authText.textContent = 'Dashboard';
         authLink.href = 'auth.html';
     } else {
         authText.textContent = 'Login';
